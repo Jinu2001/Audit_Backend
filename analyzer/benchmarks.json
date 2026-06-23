@@ -1,0 +1,20 @@
+{
+  "landing_page": {
+    "word_count": { "min": 300, "max": 600 },
+    "cta_count": { "min": 1, "max": 2 },
+    "h1_count": { "ideal": 1 },
+    "alt_text_pct": { "max": 0.1 }
+  },
+  "blog_post": {
+    "word_count": { "min": 800, "max": 2000 },
+    "cta_count": { "min": 1, "max": 3 },
+    "h1_count": { "ideal": 1 },
+    "alt_text_pct": { "max": 0.1 }
+  },
+  "homepage": {
+    "word_count": { "min": 500, "max": 1500 },
+    "cta_count": { "min": 2, "max": 5 },
+    "h1_count": { "ideal": 1 },
+    "alt_text_pct": { "max": 0.1 }
+  }
+}
