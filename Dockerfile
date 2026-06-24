@@ -31,11 +31,14 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Set Playwright browser path to a persistent location inside /app
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Install Playwright's Chromium browser (in same layer as npm install)
+# Install Playwright's Chromium browser to /app/ms-playwright
 RUN npx playwright install chromium
 
 # Copy rest of the source code
