@@ -26,8 +26,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// Conditionally start server listener for local dev
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+// Start server unless running as a Vercel serverless function
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
