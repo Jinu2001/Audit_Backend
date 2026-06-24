@@ -54,21 +54,34 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Step 6: Log prompts and raw output to logs/
+    // Step 6: Append audit log entry to logs/logs.json
     const logsDir = path.join(__dirname, '..', 'logs');
+    const logsFile = path.join(logsDir, 'logs.json');
     try {
       await fs.mkdir(logsDir, { recursive: true });
-      
-      const timestamp = Date.now();
-      const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50); // limit length
-      
-      await fs.writeFile(path.join(logsDir, `system_prompt_${sanitizedUrl}_${timestamp}.txt`), systemPrompt, 'utf8');
-      await fs.writeFile(path.join(logsDir, `user_prompt_${sanitizedUrl}_${timestamp}.json`), userPrompt, 'utf8');
-      await fs.writeFile(path.join(logsDir, `raw_output_${sanitizedUrl}_${timestamp}.json`), JSON.stringify(aiResponse, null, 2), 'utf8');
-      
-      console.log('Saved prompt logs successfully');
+
+      // Read existing logs or start fresh
+      let existingLogs = [];
+      try {
+        const raw = await fs.readFile(logsFile, 'utf8');
+        existingLogs = JSON.parse(raw);
+      } catch (_) {
+        existingLogs = [];
+      }
+
+      // Append new entry
+      existingLogs.push({
+        timestamp: new Date().toISOString(),
+        url,
+        system_prompt: systemPrompt,
+        user_prompt: userPrompt,
+        raw_output: aiResponse
+      });
+
+      await fs.writeFile(logsFile, JSON.stringify(existingLogs, null, 2), 'utf8');
+      console.log('Saved prompt log to logs.json');
     } catch (logError) {
-      console.error('Error writing logs:', logError.message);
+      console.error('Error writing logs.json:', logError.message);
     }
 
     // Step 7: Format and return final response
