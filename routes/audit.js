@@ -75,7 +75,8 @@ router.post('/', async (req, res) => {
         url,
         system_prompt: systemPrompt,
         user_prompt: userPrompt,
-        raw_output: aiResponse
+        structured_input: JSON.parse(userPrompt),
+        raw_model_output: aiResponse
       });
 
       await fs.writeFile(logsFile, JSON.stringify(existingLogs, null, 2), 'utf8');
@@ -109,7 +110,8 @@ router.post('/', async (req, res) => {
       prompt_logs: {
         system_prompt: systemPrompt,
         user_prompt: userPrompt,
-        raw_output: JSON.stringify(aiResponse, null, 2)
+        structured_input: JSON.parse(userPrompt),
+        raw_model_output: JSON.stringify(aiResponse, null, 2)
       }
     };
 
