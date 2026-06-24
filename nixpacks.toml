@@ -1,7 +1,6 @@
 [phases.setup]
 nixPkgs = [
   "nodejs_20",
-  "chromium",
   "nss",
   "nspr",
   "atk",
@@ -32,8 +31,11 @@ nixPkgs = [
 [phases.install]
 cmds = [
   "npm install",
-  "npx playwright install chromium --with-deps"
+  "PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright npx playwright install chromium --with-deps"
 ]
+
+[variables]
+PLAYWRIGHT_BROWSERS_PATH = "/app/ms-playwright"
 
 [start]
 cmd = "node server.js"
