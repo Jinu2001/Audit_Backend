@@ -54,17 +54,17 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Step 6: Log prompts and raw output to backend/logs/
+    // Step 6: Log prompts and raw output to logs/
     const logsDir = path.join(__dirname, '..', 'logs');
     try {
       await fs.mkdir(logsDir, { recursive: true });
       
       const timestamp = Date.now();
-      const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 50); // limit length
       
-      await fs.writeFile(path.join(logsDir, `system_prompt.txt`), systemPrompt, 'utf8');
-      await fs.writeFile(path.join(logsDir, `user_prompt.json`), userPrompt, 'utf8');
-      await fs.writeFile(path.join(logsDir, `raw_output.json`), JSON.stringify(aiResponse, null, 2), 'utf8');
+      await fs.writeFile(path.join(logsDir, `system_prompt_${sanitizedUrl}_${timestamp}.txt`), systemPrompt, 'utf8');
+      await fs.writeFile(path.join(logsDir, `user_prompt_${sanitizedUrl}_${timestamp}.json`), userPrompt, 'utf8');
+      await fs.writeFile(path.join(logsDir, `raw_output_${sanitizedUrl}_${timestamp}.json`), JSON.stringify(aiResponse, null, 2), 'utf8');
       
       console.log('Saved prompt logs successfully');
     } catch (logError) {
@@ -92,6 +92,7 @@ router.post('/', async (req, res) => {
       flags,
       insights: aiResponse.insights,
       recommendations: aiResponse.recommendations,
+      screenshot: rawMetrics.screenshot,
       prompt_logs: {
         system_prompt: systemPrompt,
         user_prompt: userPrompt,

@@ -8,22 +8,44 @@ import * as cheerio from 'cheerio';
  */
 export async function scrapeUrl(urlString) {
   try {
-    // Add protocol if missing, default to https
-    let targetUrl = urlString;
+    if (!urlString || typeof urlString !== 'string') {
+      throw new Error('A valid URL string is required');
+    }
+
+    let targetUrl = urlString.trim();
     let autoAddedProtocol = false;
     
+    // Add protocol if missing, default to https
     if (!/^https?:\/\//i.test(targetUrl)) {
+      // Check if it has some other protocol (like file://, ftp://, chrome://)
+      if (/^[a-z0-9+.-]+:\/\//i.test(targetUrl)) {
+        throw new Error('Only http:// and https:// URLs are allowed');
+      }
       targetUrl = 'https://' + targetUrl;
       autoAddedProtocol = true;
+    }
+
+    const parsedUrl = new URL(targetUrl);
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+      throw new Error('Only http:// and https:// URLs are allowed');
+    }
+
+    // Block local/internal hostnames
+    const localHosts = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+    if (localHosts.includes(parsedUrl.hostname) || parsedUrl.hostname.endsWith('.local')) {
+      throw new Error('Auditing local or internal domains is not allowed');
     }
 
     let html;
     let finalUrl = targetUrl;
     let domain;
+    let screenshotBase64 = null;
 
     const browser = await chromium.launch({ headless: true });
     try {
       const page = await browser.newPage();
+      // Set desktop size for the screenshot
+      await page.setViewportSize({ width: 1280, height: 800 });
       
       try {
         // Navigate and wait for DOM
@@ -48,6 +70,14 @@ export async function scrapeUrl(urlString) {
       domain = parsedUrl.hostname;
 
       html = await page.content();
+
+      // Capture lightweight base64 screenshot
+      try {
+        const screenshotBuffer = await page.screenshot({ type: 'jpeg', quality: 65 });
+        screenshotBase64 = screenshotBuffer.toString('base64');
+      } catch (scrError) {
+        console.warn(`Failed to capture screenshot: ${scrError.message}`);
+      }
     } finally {
       await browser.close();
     }
@@ -168,7 +198,8 @@ export async function scrapeUrl(urlString) {
       metaTitle,
       metaDescription,
       contentSample,
-      isSpa
+      isSpa,
+      screenshot: screenshotBase64
     };
 
   } catch (error) {
