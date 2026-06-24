@@ -1,12 +1,12 @@
 # Website Audit Tool - Backend
 
-This is the backend API for the EIGHT25MEDIA Website Audit Tool. It's built with Express.js and leverages Playwright, Cheerio, and Google Generative AI (Gemini) to perform comprehensive audits on any webpage.
+This is the backend API for the EIGHT25MEDIA Website Audit Tool. It's built with Express.js and leverages Playwright, Cheerio, and the Groq API (Llama 3) to perform comprehensive audits on any webpage.
 
 ## Features
 
 - **Web Scraping:** Uses Playwright and Cheerio to extract page content, metadata, links, images, and other critical SEO/structure metrics.
 - **Page Classification & Rules:** Automatically categorizes the page and runs deterministic benchmark checks.
-- **AI-Powered Insights:** Uses `@google/generative-ai` to analyze the extracted metrics and provide intelligent insights and prioritized recommendations.
+- **AI-Powered Insights:** Uses the Groq API to analyze the extracted metrics and provide intelligent insights and prioritized recommendations.
 - **Screenshots:** Captures visual screenshots of the audited webpages.
 - **Logging:** Maintains audit logs (`logs/logs.json`) for review and debugging.
 
@@ -29,7 +29,8 @@ This is the backend API for the EIGHT25MEDIA Website Audit Tool. It's built with
 Create a `.env` file in the root of the backend directory and add the necessary environment variables, for example:
 ```env
 PORT=5000
-# Add your Gemini API key and other required variables
+# Add your Groq API key and other required variables
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ## Running the Server
