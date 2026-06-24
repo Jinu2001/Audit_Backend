@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import auditRouter from './routes/audit.js';
+import logsRouter from './routes/logs.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/audit', auditRouter);
+app.use('/api/logs', logsRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
